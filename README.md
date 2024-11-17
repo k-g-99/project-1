@@ -1,146 +1,68 @@
-### Dockerizing an Angular App and Pushing It to Docker Hub
+# Angular Application Dockerfile
 
-#### Step 1: Create a `Dockerfile` for Angular App
+This project uses Docker to containerize an Angular application, which is built using Node.js and served by Nginx. The following steps outline the process of building and serving the Angular app in a Docker container.
 
-1. **Navigate to your Angular project directory**.
-2. **Create a `Dockerfile`** in the root of your Angular project (the same directory as `package.json`).
+## Dockerfile Details
 
-Here’s the `Dockerfile` for the `kg-angular` app:
+This `Dockerfile` consists of two main stages:
 
-```Dockerfile
-# Step 1: Build the Angular app using Node.js
-FROM node:18 AS build
+### **Stage 1: Build the Angular App using Node.js**
 
-# Set the working directory inside the container
-WORKDIR /app
+1. **Base Image**: We use the `node:18` image to build the Angular application.
+2. **Working Directory**: The container's working directory is set to `/app`.
+3. **Copying Files**: The `package.json` and `package-lock.json` files are copied into the container. These files are essential for installing the app's dependencies.
+4. **Installing Dependencies**: The Angular CLI is installed globally using `npm install -g @angular/cli`, and then the project dependencies are installed with `npm install --verbose`.
+5. **Copying Application Code**: The Angular configuration files (`angular.json`, `tsconfig.json`, etc.) and the `src` directory are copied into the container.
+6. **Building the Application**: The Angular application is built in production mode with the command `ng build --configuration=production`.
 
-# Copy package.json and install dependencies
-COPY package*.json ./
+### **Stage 2: Set up Nginx to Serve the Angular App**
 
-# Install Angular CLI globally and other dependencies
-RUN npm install -g @angular/cli
-RUN npm install
-
-# Copy the rest of your application source code
-COPY . .
-
-# Build the Angular app in production mode
-RUN ng build --prod
-
-# Step 2: Set up Nginx to serve the built Angular app
-FROM nginx:alpine
-
-# Copy the Angular build files from the build stage to Nginx
-COPY --from=build /app/dist/kg-angular /usr/share/nginx/html
-
-# Expose port 80 to allow access to the app
-EXPOSE 80
-
-# Start Nginx server
-CMD ["nginx", "-g", "daemon off;"]
-```
-
-- **Explanation**:
-  - `FROM node:18 AS build`: Uses the official Node.js image to build the Angular app.
-  - `WORKDIR /app`: Sets `/app` as the working directory inside the container.
-  - `COPY package*.json ./`: Copies the `package.json` and `package-lock.json` (if any) to install dependencies.
-  - `RUN npm install -g @angular/cli` and `RUN npm install`: Installs Angular CLI and project dependencies.
-  - `COPY . .`: Copies the rest of your source code into the container.
-  - `RUN ng build --prod`: Builds the app for production.
-  - `FROM nginx:alpine`: Uses Nginx to serve the built Angular app.
-  - `COPY --from=build /app/dist/kg-angular /usr/share/nginx/html`: Copies the build files into the Nginx web root.
-  - `EXPOSE 80`: Exposes port 80 for accessing the app.
-  - `CMD ["nginx", "-g", "daemon off;"]`: Starts the Nginx server.
-
-#### Step 2: Build the Docker Image
-
-Now, from the root of your Angular app (where the `Dockerfile` is located), run the following command to build your Docker image:
-
-```bash
-docker build -t kg-angular/angular-app .
-```
-
-- **Explanation**:
-  - `-t kg-angular/angular-app`: Tags your image with the name `kg-angular/angular-app`. This uses `kg-angular` as your Docker Hub username and `angular-app` as the image name.
-  - `.`: Tells Docker to use the `Dockerfile` in the current directory.
-
-#### Step 3: Run the Docker Container Locally (Optional)
-
-You can run the container locally to make sure everything is working before pushing it to Docker Hub:
-
-```bash
-docker run -d -p 8080:80 kg-angular/angular-app
-```
-
-- **Explanation**:
-  - This runs the container in detached mode (`-d`) and maps port 8080 on your host to port 80 on the container.
-  - Open your browser and navigate to `http://localhost:8080` to see the Angular app running.
-
-#### Step 4: Push the Image to Docker Hub
-
-1. **Login to Docker Hub** (if not already logged in):
-   ```bash
-   docker login
-   ```
-   You will be prompted for your Docker Hub credentials.
-
-2. **Push the Docker image** to Docker Hub:
-   ```bash
-   docker push kg-angular/angular-app
-   ```
-
-- This uploads your image to Docker Hub, where it can be accessed from anywhere.
-
-#### Step 5: Verify the Image on Docker Hub
-
-1. Go to [Docker Hub](https://hub.docker.com/).
-2. Navigate to your account and you should see the `angular-app` repository with the image pushed.
+1. **Base Image**: We use the `nginx:alpine` image for serving the application.
+2. **Copy Build Files**: The build files from the Angular build stage are copied into Nginx’s default directory (`/usr/share/nginx/html`).
+3. **Expose Port**: The container exposes port 80 to allow HTTP access to the app.
+4. **Nginx Command**: The container runs the Nginx server with the command `nginx -g 'daemon off;'`.
 
 ---
 
-### Complete Example
+## How to Build and Push the Docker Image
 
-**Dockerfile**:
+To build and push this Docker image to your Docker Hub account, follow these steps:
 
-```Dockerfile
-# Step 1: Build the Angular app using Node.js
-FROM node:18 AS build
+### **1. Build the Docker Image**
 
-WORKDIR /app
-
-COPY package*.json ./
-
-RUN npm install -g @angular/cli
-RUN npm install
-
-COPY . .
-
-RUN ng build --prod
-
-# Step 2: Set up Nginx to serve the built Angular app
-FROM nginx:alpine
-
-COPY --from=build /app/dist/kg-angular /usr/share/nginx/html
-
-EXPOSE 80
-
-CMD ["nginx", "-g", "daemon off;"]
-```
-
-**Build Docker Image**:
+Run the following command to build the Docker image:
 
 ```bash
-docker build -t kg-angular/angular-app .
+docker build -t kareemgamal/kg-angular .
 ```
 
-**Run Docker Image Locally**:
+This command will create an image named `kareemgamal/kg-angular` from the Dockerfile in the current directory.
+
+### **2. Log in to Docker Hub**
+
+If you are not already logged in, log in to your Docker Hub account:
 
 ```bash
-docker run -d -p 8080:80 kg-angular/angular-app
+docker login
 ```
 
-**Push Image to Docker Hub**:
+### **3. Push the Docker Image to Docker Hub**
+
+Once the image is built and you're logged into Docker Hub, run the following command to push the image:
 
 ```bash
-docker push kg-angular/angular-app
+docker push kareemgamal/kg-angular
 ```
+
+This will push the image to your Docker Hub account under the repository `kareemgamal/kg-angular`.
+
+You can view your Docker image on Docker Hub by visiting:  
+[https://hub.docker.com/r/kareemgamal/kg-angular](https://hub.docker.com/r/kareemgamal/kg-angular)
+
+---
+
+## Final Image
+
+Here’s the image representing the Dockerized Angular application:
+
+![Angular App Image](kg_angular.jpeg)
