@@ -1,33 +1,71 @@
-# Session 3 assignment Task 1:
+Here's how you can write a `README.md` file for the task:
 
-- Create your github account 
-- configure git with your new account 
-- create a new repo on your github account 
-- clone this repo to your machine 
-- create a new branch called feature_a
-- make some changes on the branch 
-- push the branch to the remote repo
-- create a PR to merge your branch to the master branch and add me as a reviewer to approve the changes before merging.
+---
 
-# Ans: 
+## Task: Run an Nginx Container and Make It Accessible Through Your Browser
+
+### Objective
+- Launch an Nginx container.
+- Access the Nginx welcome page through your browser using an Elastic IP.
+- Enter the container and restart the Nginx service.
+
+---
+
+### Steps to Complete the Task
+
+1. **Launch an Nginx Container**
+   ```bash
+   docker run -d --name nginx-container -p 80:80 nginx
+   ```
+   - The `-d` flag runs the container in detached mode.
+   - The `--name` flag names the container `nginx-container`.
+   - The `-p 80:80` maps port 80 of your host machine to port 80 of the container.
+
+2. **Create a Temporary Elastic IP**
+   - Log in to your AWS Management Console.
+   - Go to the **EC2 Dashboard** > **Elastic IPs**.
+   - Allocate a new Elastic IP and associate it with your EC2 instance running Docker.
+
+3. **Access the Nginx Welcome Page**
+   - Open your browser.
+   - Enter the Elastic IP you associated with your EC2 instance.
+   - You should see the default Nginx welcome page.
+
+4. **Enter the Running Container**
+   ```bash
+   docker exec -it nginx-container bash
+   ```
+   - The `exec` command allows you to run a shell inside the container.
+
+5. **Restart the Nginx Service Inside the Container**
+   ```bash
+   service nginx restart
+   ```
+   - This command restarts the Nginx service running in the container.
+
+6. **Release the Elastic IP (Optional)**
+   - Once you're done, go back to the AWS Management Console.
+   - Disassociate and release the Elastic IP to avoid unnecessary charges.
+
+---
 
 ### Example Commands
+
+#### Launch the Nginx Container
 ```bash
-# Configure Git
-git config --global user.name "YourGitHubUsername"
-git config --global user.email "YourEmail@example.com"
-
-# Clone the repository
-git clone https://github.com/k-g-99/project-1.git
-cd YourRepo
-
-# Create and switch to a new branch
-git checkout -b feature_a
-
-# Make changes, stage, and commit
-git add .
-git commit -m "Add changes for feature_a"
-
-# Push the branch to the remote repository
-git push -u origin feature_a
+docker run -d --name nginx-container -p 80:80 nginx
 ```
+
+#### Associate Elastic IP
+- AWS Console > EC2 Dashboard > Elastic IPs > Allocate Elastic IP > Associate with EC2 instance.
+
+#### Enter the Container and Restart Nginx
+```bash
+docker exec -it nginx-container bash
+service nginx restart
+```
+
+#### Release Elastic IP (Optional)
+- AWS Console > EC2 Dashboard > Elastic IPs > Disassociate > Release.
+
+![Nginx Welcome Page](./Nginx%20welcome%20page.jpeg)
