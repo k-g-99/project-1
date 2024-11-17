@@ -1,7 +1,3 @@
-Here's how you can write a `README.md` file for the task:
-
----
-
 ## Task: Run an Nginx Container and Make It Accessible Through Your Browser
 
 ### Objective
