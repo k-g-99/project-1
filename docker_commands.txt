@@ -1,0 +1,6 @@
+real time changes 
+docker run -p 8501:8501 -v /home/ubuntu/project-1/streamlit-example:/app streamlit 
+
+
+docker build -t streamlit .
+docker run -d -p 8501:8501 streamlit
