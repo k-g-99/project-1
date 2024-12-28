@@ -9,8 +9,7 @@ pipeline {
     stages {
         stage('Clone Repository') {
             steps {
-                // Replace with your repository details (e.g., GitHub or GitLab)
-                git branch: 'main', url: 'https://github.com/your-repo/streamlit-app.git'
+                git branch: 'main', url: 'https://github.com/k-g-99/project-1.git'
             }
         }
 
